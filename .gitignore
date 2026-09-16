@@ -39,3 +39,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+
+# database
+/dev.db
+/dev.db-journal
+
+# uploaded product images (served via src/app/uploads/[filename]/route.ts,
+# stored outside public/ so a Railway volume can persist them alongside the DB)
+/uploads/
+
+# Prisma's auto-generated agent-skill scaffolding (not used by this project)
+/.agents/
+/.claude/
+/.windsurf/
+/skills-lock.json
