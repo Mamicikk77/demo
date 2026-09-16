@@ -1,6 +1,7 @@
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { PrismaClient } from "../src/generated/prisma/client";
 import bcrypt from "bcryptjs";
+import { GODZ_MENU } from "./godz-menu-data";
 
 const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
 const prisma = new PrismaClient({ adapter });
@@ -45,14 +46,37 @@ async function main() {
     },
   });
 
-  const existingCategory = await prisma.category.findFirst();
-  if (!existingCategory) {
-    await prisma.category.create({
-      data: {
-        name: "Örnek Kategori",
-        sortOrder: 0,
-      },
-    });
+  // Denemeler sırasında oluşan yer tutucu kategorileri temizle (gerçek
+  // menü verisiyle çakışmaması için) — sadece bu iki isimle, kullanıcının
+  // kendi eklediği hiçbir şeye dokunmaz.
+  await prisma.category.deleteMany({
+    where: { name: { in: ["Örnek Kategori", "İçecekler"] } },
+  });
+
+  const godzCategoryNames = GODZ_MENU.map((c) => c.name);
+  const hasGodzMenu = await prisma.category.findFirst({
+    where: { name: { in: godzCategoryNames } },
+  });
+
+  if (!hasGodzMenu) {
+    for (const [categoryIndex, category] of GODZ_MENU.entries()) {
+      await prisma.category.create({
+        data: {
+          name: category.name,
+          description: category.note ?? null,
+          isFeatured: category.isFeatured ?? false,
+          sortOrder: categoryIndex,
+          products: {
+            create: category.items.map(([name, description, price], itemIndex) => ({
+              name,
+              description: description || null,
+              price,
+              sortOrder: itemIndex,
+            })),
+          },
+        },
+      });
+    }
   }
 
   console.log("Seed tamamlandı.");
