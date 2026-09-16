@@ -48,7 +48,11 @@ export default async function UrunDuzenlePage({
           submitLabel="Değişiklikleri Kaydet"
           initialData={{
             name: product.name,
+            nameEn: product.nameEn,
+            nameRu: product.nameRu,
             description: product.description,
+            descriptionEn: product.descriptionEn,
+            descriptionRu: product.descriptionRu,
             price: product.price,
             calories: product.calories,
             categoryId: product.categoryId,

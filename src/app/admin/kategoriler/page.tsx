@@ -37,7 +37,13 @@ export default async function KategorilerPage() {
                 category={{
                   id: category.id,
                   name: category.name,
+                  nameEn: category.nameEn,
+                  nameRu: category.nameRu,
                   description: category.description,
+                  descriptionEn: category.descriptionEn,
+                  descriptionRu: category.descriptionRu,
+                  imageUrl: category.imageUrl,
+                  section: category.section,
                   isActive: category.isActive,
                   isFeatured: category.isFeatured,
                   productCount: category._count.products,

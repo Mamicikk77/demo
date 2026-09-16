@@ -6,29 +6,29 @@ import { GODZ_MENU } from "./godz-menu-data";
 const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
 const prisma = new PrismaClient({ adapter });
 
-const ALLERGENS = [
-  "Gluten içeren tahıllar",
-  "Kabuklu deniz ürünleri",
-  "Yumurta",
-  "Balık",
-  "Yer fıstığı",
-  "Soya",
-  "Süt (laktoz dahil)",
-  "Sert kabuklu yemişler (fındık, ceviz, badem vb.)",
-  "Kereviz",
-  "Hardal",
-  "Susam",
-  "Kükürt dioksit ve sülfitler",
-  "Lüpin",
-  "Yumuşakçalar",
+const ALLERGENS: { name: string; nameEn: string; nameRu: string }[] = [
+  { name: "Gluten içeren tahıllar", nameEn: "Gluten-containing cereals", nameRu: "Злаки, содержащие глютен" },
+  { name: "Kabuklu deniz ürünleri", nameEn: "Crustaceans", nameRu: "Ракообразные" },
+  { name: "Yumurta", nameEn: "Egg", nameRu: "Яйцо" },
+  { name: "Balık", nameEn: "Fish", nameRu: "Рыба" },
+  { name: "Yer fıstığı", nameEn: "Peanuts", nameRu: "Арахис" },
+  { name: "Soya", nameEn: "Soy", nameRu: "Соя" },
+  { name: "Süt (laktoz dahil)", nameEn: "Milk (incl. lactose)", nameRu: "Молоко (включая лактозу)" },
+  { name: "Sert kabuklu yemişler (fındık, ceviz, badem vb.)", nameEn: "Tree nuts (hazelnut, walnut, almond etc.)", nameRu: "Орехи (фундук, грецкий орех, миндаль и т.д.)" },
+  { name: "Kereviz", nameEn: "Celery", nameRu: "Сельдерей" },
+  { name: "Hardal", nameEn: "Mustard", nameRu: "Горчица" },
+  { name: "Susam", nameEn: "Sesame", nameRu: "Кунжут" },
+  { name: "Kükürt dioksit ve sülfitler", nameEn: "Sulphur dioxide and sulphites", nameRu: "Диоксид серы и сульфиты" },
+  { name: "Lüpin", nameEn: "Lupin", nameRu: "Люпин" },
+  { name: "Yumuşakçalar", nameEn: "Molluscs", nameRu: "Моллюски" },
 ];
 
 async function main() {
-  for (const name of ALLERGENS) {
+  for (const allergen of ALLERGENS) {
     await prisma.allergen.upsert({
-      where: { name },
-      update: {},
-      create: { name },
+      where: { name: allergen.name },
+      update: { nameEn: allergen.nameEn, nameRu: allergen.nameRu },
+      create: allergen,
     });
   }
 
@@ -46,32 +46,53 @@ async function main() {
     },
   });
 
-  // Denemeler sırasında oluşan yer tutucu kategorileri temizle (gerçek
-  // menü verisiyle çakışmaması için) — sadece bu iki isimle, kullanıcının
-  // kendi eklediği hiçbir şeye dokunmaz.
-  await prisma.category.deleteMany({
-    where: { name: { in: ["Örnek Kategori", "İçecekler"] } },
+  // "Ana Yemekler" sadece yeni (üç dilli) menüde var — eski menüde
+  // "Sıcak Yemekler" adıyla geçiyordu. Bu yüzden tek başlı bir eşleşme
+  // kontrolü için güvenilir bir işaret: bazı kategori isimleri (ör.
+  // "Salatalar") eski ve yeni menüde ortak olduğundan, tek bir isim
+  // eşleşmesi yanlışlıkla "zaten seed edilmiş" sanılmasına yol açabilir.
+  const newMenuMarker = await prisma.category.findFirst({
+    where: { name: "Ana Yemekler" },
   });
+  const hasNewMenu = Boolean(newMenuMarker);
 
-  const godzCategoryNames = GODZ_MENU.map((c) => c.name);
-  const hasGodzMenu = await prisma.category.findFirst({
-    where: { name: { in: godzCategoryNames } },
-  });
+  if (!hasNewMenu) {
+    // Denemeler sırasında oluşan eski/yer tutucu kategorileri temizle —
+    // bu veritabanı henüz gerçek işletme verisi içermiyorsa (ilk kurulum)
+    // eski GODZ menüsünü yeni üç dilli menüyle değiştiriyoruz.
+    await prisma.category.deleteMany({});
 
-  if (!hasGodzMenu) {
+    const allergenByName = new Map(
+      (await prisma.allergen.findMany()).map((a) => [a.name, a.id])
+    );
+
     for (const [categoryIndex, category] of GODZ_MENU.entries()) {
       await prisma.category.create({
         data: {
           name: category.name,
-          description: category.note ?? null,
-          isFeatured: category.isFeatured ?? false,
+          nameEn: category.nameEn ?? null,
+          nameRu: category.nameRu ?? null,
+          section: category.section,
+          imageUrl: category.image ?? null,
           sortOrder: categoryIndex,
           products: {
-            create: category.items.map(([name, description, price], itemIndex) => ({
-              name,
-              description: description || null,
-              price,
+            create: category.items.map((item, itemIndex) => ({
+              name: item.name,
+              nameEn: item.nameEn ?? null,
+              nameRu: item.nameRu ?? null,
+              description: item.description || null,
+              descriptionEn: item.descriptionEn || null,
+              descriptionRu: item.descriptionRu || null,
+              price: item.price,
+              calories: item.calories ?? null,
+              imageUrl: item.image ?? null,
               sortOrder: itemIndex,
+              allergens: {
+                create: (item.allergenNames ?? [])
+                  .map((name) => allergenByName.get(name))
+                  .filter((id): id is string => Boolean(id))
+                  .map((allergenId) => ({ allergenId })),
+              },
             })),
           },
         },

@@ -7,35 +7,34 @@
 <script src="/qr-menu/config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#15130f;
-    --ink-2:#1e1b15;
-    --ink-3:#2a251c;
-    --paper:#efe6d2;
-    --muted:#a79c87;
-    --gold:#c9a24c;
-    --gold-soft:#e3c581;
-    --olive:#7c8a5f;
-    --line:#3a3327;
-    --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
-
-    /* menu screen: beige ground, gold-bronze ink */
-    --menu-bg:#f2ead9;
-    --menu-panel:#e9dcbf;
-    --menu-gold:#8a6a1f;
-    --menu-gold-soft:#a9843a;
-    --menu-gold-strong:#6b5117;
-    --menu-muted:#8d7c56;
-    --menu-line:rgba(138,106,31,.28);
+    --bg:#f7f0dd;
+    --bg-2:#f1e6c9;
+    --panel:#efe3c4;
+    --panel-2:#f4ead2;
+    --ink:#2c2013;
+    --ink-soft:#6d5c3f;
+    --muted:#8d7a56;
+    --gold:#b3822b;
+    --gold-deep:#8a6a1f;
+    --gold-light:#d9ab4e;
+    --plum:#4a1f4d;
+    --plum-soft:#6d3572;
+    --plum-2:#3a1a3d;
+    --line:rgba(138,106,31,.25);
+    --line-strong:rgba(138,106,31,.42);
+    --cream:#fbf6e9;
+    --shadow: 0 18px 40px -18px rgba(58,26,61,.35);
+    --shadow-lg: 0 26px 60px -24px rgba(58,26,61,.45);
   }
 
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--ink);
-    color:var(--paper);
+    background:var(--bg);
+    color:var(--ink);
     font-family:'Jost', ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing:antialiased;
     overscroll-behavior-y:none;
@@ -43,268 +42,266 @@
   h1,h2,h3,.serif{
     font-family:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   }
-  ::selection{background:var(--gold); color:var(--ink);}
-
+  ::selection{background:var(--gold-light); color:var(--plum-2);}
   a{color:inherit;}
+  button{font-family:inherit;}
 
-  .screen{
-    position:relative;
-    min-height:100dvh;
-    width:100%;
+  .screen{position:relative; min-height:100dvh; width:100%;}
+
+  /* ---------- LANGUAGE SWITCH ---------- */
+  .lang-switch{
+    position:fixed; top:16px; right:16px; z-index:30;
+    display:flex; gap:2px; padding:3px; border-radius:100px;
+    border:1px solid rgba(251,246,233,.4);
+    background:rgba(58,26,61,.42);
+    backdrop-filter:blur(3px);
   }
+  body.view-menu .lang-switch{ border-color:var(--line-strong); background:var(--cream); box-shadow:var(--shadow); }
+  .lang-switch button{
+    appearance:none; border:none; cursor:pointer; background:transparent;
+    padding:6px 11px; border-radius:100px; font-size:.66rem;
+    letter-spacing:.06em; font-weight:500; color:rgba(251,246,233,.75);
+  }
+  body.view-menu .lang-switch button{ color:var(--gold-deep); }
+  .lang-switch button.active{ background:var(--gold-light); color:var(--plum-2); }
+  body.view-menu .lang-switch button.active{ background:var(--plum); color:var(--cream); }
 
   /* ---------- COVER ---------- */
   #cover{
-    height:100dvh;
-    min-height:560px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:space-between;
-    padding:clamp(20px,5vh,40px) 20px;
-    text-align:center;
+    height:100dvh; min-height:560px; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+    padding:clamp(20px,5vh,40px) 20px; text-align:center;
   }
-  #cover.leaving{opacity:0; pointer-events:none; transition:opacity .5s ease;}
-
-  .video-wrap{
-    position:absolute; inset:0;
-    z-index:0;
-  }
+  .video-wrap{position:absolute; inset:0; z-index:0;}
   .video-wrap video{
-    position:absolute; inset:0;
-    width:100%; height:100%;
-    object-fit:cover;
-    filter:saturate(0.92) contrast(1.02);
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    filter:saturate(1.05) contrast(1.02);
   }
   .video-scrim{
     position:absolute; inset:0;
     background:
-      linear-gradient(180deg, rgba(21,19,15,.55) 0%, rgba(21,19,15,.28) 26%, rgba(21,19,15,.55) 62%, rgba(21,19,15,.92) 100%);
+      linear-gradient(180deg, rgba(43,20,29,.52) 0%, rgba(58,26,61,.22) 30%, rgba(43,20,29,.38) 60%, rgba(30,15,20,.78) 100%);
   }
-
   .mute-btn{
-    position:absolute; top:16px; right:16px; z-index:3;
+    position:absolute; top:16px; left:16px; z-index:3;
     width:38px;height:38px;border-radius:50%;
-    border:1px solid rgba(239,230,210,.35);
-    background:rgba(21,19,15,.45);
-    color:var(--paper);
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer;
+    border:1px solid rgba(251,246,233,.4);
+    background:rgba(58,26,61,.4); color:var(--cream);
+    display:flex;align-items:center;justify-content:center; cursor:pointer;
   }
   .mute-btn svg{width:17px;height:17px;}
 
   .cover-top{position:relative; z-index:2; margin-top:clamp(8px,4vh,28px);}
   .logo-img{
-    width:clamp(150px,42vw,210px);
-    height:auto;
-    display:block;
-    margin:0 auto;
-    filter:drop-shadow(0 6px 18px rgba(0,0,0,.45));
+    width:clamp(150px,42vw,215px); height:auto; display:block; margin:0 auto;
+    filter:drop-shadow(0 8px 22px rgba(0,0,0,.4));
   }
   .tagline{
-    margin:14px 0 0;
-    font-size:.72rem;
-    letter-spacing:.28em;
-    text-transform:uppercase;
-    color:var(--muted);
-    font-weight:400;
+    margin:14px 0 0; font-size:.72rem; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--gold-light); font-weight:400;
   }
 
   .cover-bottom{position:relative; z-index:2; width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:22px;}
 
   .cta{
-    appearance:none; border:none; cursor:pointer;
-    width:100%;
-    padding:16px 20px;
-    background:var(--gold);
-    color:var(--ink);
-    font-family:'Jost',sans-serif;
-    font-size:.86rem;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    font-weight:500;
-    border-radius:2px;
-    display:flex; align-items:center; justify-content:center; gap:10px;
-    transition:transform .25s ease, background .25s ease;
+    appearance:none; border:none; cursor:pointer; width:100%; padding:16px 20px;
+    background:linear-gradient(135deg, var(--gold-light), var(--gold));
+    color:var(--plum-2); font-size:.86rem; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+    border-radius:3px; display:flex; align-items:center; justify-content:center; gap:10px;
+    box-shadow:0 14px 30px -10px rgba(179,130,43,.55);
+    transition:transform .25s ease, box-shadow .25s ease;
   }
-  .cta:hover{background:var(--gold-soft); transform:translateY(-2px);}
+  .cta:hover{transform:translateY(-2px); box-shadow:0 18px 34px -10px rgba(179,130,43,.65);}
   .cta:active{transform:translateY(0);}
   .cta svg{width:15px;height:15px; transition:transform .25s ease;}
   .cta:hover svg{transform:translateX(3px);}
 
-  .icon-row{
-    display:flex; justify-content:center; gap:clamp(14px,4vw,26px); width:100%;
-  }
+  .icon-row{display:flex; justify-content:center; gap:clamp(14px,4vw,26px); width:100%;}
   .icon-btn{
-    background:none; border:none; cursor:pointer;
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    color:var(--paper); text-decoration:none;
-    font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
-    font-family:'Jost',sans-serif;
+    background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px;
+    color:var(--cream); text-decoration:none; font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+    color:rgba(251,246,233,.8); font-family:'Jost',sans-serif;
   }
   .icon-circle{
-    width:48px;height:48px;border-radius:50%;
-    border:1px solid rgba(201,162,76,.55);
-    display:flex;align-items:center;justify-content:center;
-    background:rgba(239,230,210,.03);
+    width:48px;height:48px;border-radius:50%; border:1px solid rgba(217,171,78,.6);
+    display:flex;align-items:center;justify-content:center; background:rgba(251,246,233,.06);
     transition:border-color .25s ease, background .25s ease, transform .25s ease;
   }
-  .icon-circle svg{width:19px;height:19px; stroke:var(--gold-soft); transition:stroke .25s ease;}
-  .icon-btn:hover .icon-circle{background:rgba(201,162,76,.14); border-color:var(--gold-soft); transform:translateY(-2px);}
+  .icon-circle svg{width:19px;height:19px; stroke:var(--gold-light); transition:stroke .25s ease;}
+  .icon-btn:hover .icon-circle{background:rgba(217,171,78,.18); border-color:var(--gold-light); transform:translateY(-2px);}
 
-  /* ---------- MENU (beige / gold) ---------- */
-  #menu{
-    display:none;
-    background:var(--menu-bg);
-    min-height:100dvh;
-  }
+  /* ---------- MENU ---------- */
+  #menu{display:none; background:var(--bg); min-height:100dvh;}
   #menu.active{display:block;}
 
   .menu-header{
     position:sticky; top:0; z-index:5;
-    background:linear-gradient(180deg, var(--menu-bg) 82%, rgba(242,234,217,0));
+    background:linear-gradient(180deg, var(--bg) 82%, rgba(247,240,221,0));
     padding:16px 18px 10px;
   }
-  .menu-header-row{
-    display:flex; align-items:center; gap:12px; margin-bottom:14px;
-  }
+  .menu-header-row{display:flex; align-items:center; gap:12px; margin-bottom:4px;}
   .back-btn{
-    width:36px;height:36px;border-radius:50%;
-    border:1px solid var(--menu-line);
-    background:var(--menu-panel);
-    color:var(--menu-gold-strong);
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer; flex-shrink:0;
+    width:36px;height:36px;border-radius:50%; border:1px solid var(--line-strong);
+    background:var(--panel-2); color:var(--plum);
+    display:flex;align-items:center;justify-content:center; cursor:pointer; flex-shrink:0;
+    box-shadow:var(--shadow);
   }
   .back-btn svg{width:16px;height:16px;}
-  .menu-title{
-    font-size:1.5rem; margin:0; letter-spacing:.05em; color:var(--menu-gold-strong); font-weight:600;
-  }
-  .menu-title small{display:block; font-size:.62rem; letter-spacing:.22em; color:var(--menu-muted); text-transform:uppercase; font-family:'Jost',sans-serif; margin-top:2px;}
+  .menu-title{font-size:1.5rem; margin:0; letter-spacing:.03em; color:var(--plum); font-weight:600; min-width:0;}
+  .menu-title small{display:block; font-size:.62rem; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; font-family:'Jost',sans-serif; margin-top:2px; font-style:normal;}
 
-  .pill-nav{
-    display:flex; gap:8px; overflow-x:auto; padding-bottom:6px;
-    scrollbar-width:none;
+  /* ---------- categories ---------- */
+  .section-block{max-width:680px; margin:0 auto; padding:4px 18px 8px;}
+  .section-eyebrow{
+    display:flex; align-items:center; gap:10px;
+    font-size:.68rem; letter-spacing:.24em; text-transform:uppercase; color:var(--plum);
+    margin:18px 0 10px; font-weight:500;
   }
-  .pill-nav::-webkit-scrollbar{display:none;}
-  .pill{
-    flex:0 0 auto;
-    padding:7px 14px;
-    border:1px solid var(--menu-line);
-    border-radius:100px;
-    font-size:.68rem;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    color:var(--menu-gold-soft);
-    background:var(--menu-panel);
-    cursor:pointer;
-    white-space:nowrap;
-  }
-  .pill.active{border-color:var(--menu-gold); color:var(--menu-bg); background:var(--menu-gold-strong);}
+  .section-eyebrow::after{content:''; flex:1; height:1px; background:var(--line-strong);}
+  .cat-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; padding-bottom:6px;}
 
-  .menu-body{padding:6px 18px 60px; max-width:640px; margin:0 auto;}
+  .cat-card{
+    position:relative; grid-column:span 1; min-height:132px; border-radius:12px; overflow:hidden;
+    border:1px solid var(--line); background:linear-gradient(135deg, var(--panel-2), var(--panel));
+    cursor:pointer; text-align:left; padding:0; font-family:inherit;
+    box-shadow:var(--shadow); transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .cat-card:hover{transform:translateY(-3px); box-shadow:var(--shadow-lg);}
+  .cat-card-media{position:absolute; inset:0; z-index:0;}
+  .cat-card-media img{position:relative; z-index:1; width:100%; height:100%; object-fit:cover; display:block;}
+  .cat-card-media .ph{
+    position:absolute; inset:0;
+    background:linear-gradient(150deg, var(--plum-soft), var(--gold-deep) 130%);
+  }
+  .cat-card-scrim{position:absolute; inset:0; z-index:1; background:linear-gradient(0deg, rgba(30,14,32,.86) 0%, rgba(30,14,32,.34) 55%, rgba(30,14,32,.12) 100%);}
+  .cat-card-body{position:relative; z-index:2; height:100%; display:flex; flex-direction:column; justify-content:flex-end; padding:14px 13px 12px; min-height:132px;}
+  .cat-card-title{font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:700; color:var(--cream); margin:0; line-height:1.15; text-wrap:balance;}
+  .cat-card-count{font-size:.64rem; color:var(--gold-light); letter-spacing:.05em; margin-top:4px;}
 
-  .category{padding-top:34px; scroll-margin-top:118px;}
-  .category:first-of-type{padding-top:18px;}
-  .category-head{
-    display:flex; align-items:baseline; gap:12px; margin-bottom:6px;
-  }
-  .category-head h2{
-    font-size:1.3rem; margin:0; color:var(--menu-gold-strong); font-weight:600; letter-spacing:.02em;
-  }
-  .category-rule{flex:1; height:1px; background:var(--menu-line);}
-  .category-note{
-    font-size:.72rem; color:var(--menu-gold-soft); letter-spacing:.05em; margin:0 0 14px; font-style:italic;
-  }
+  /* ---------- item list ---------- */
+  .items-body{padding:6px 18px 90px; max-width:680px; margin:0 auto;}
+  .category-note{font-size:.74rem; color:var(--plum-soft); letter-spacing:.03em; margin:0 0 14px; font-style:italic;}
 
   .item{
-    display:flex; justify-content:space-between; gap:14px;
-    padding:14px 0;
-    border-bottom:1px solid var(--menu-line);
+    display:flex; align-items:flex-start; gap:13px; width:100%; text-align:left;
+    padding:13px 6px; margin:0 0 2px; border:none; background:none; cursor:pointer;
+    border-bottom:1px solid var(--line); border-radius:8px; font-family:inherit;
+    transition:background .18s ease;
   }
+  .item:hover{background:rgba(138,106,31,.06);}
   .item:last-child{border-bottom:none;}
-  .item-main{flex:1; min-width:0;}
-  .item-name{
-    font-size:1.05rem; color:var(--menu-gold-strong); font-weight:500; margin:0;
-    font-family:'Cormorant Garamond',serif;
-  }
-  .item-desc{
-    font-size:.78rem; color:var(--menu-muted); margin:4px 0 0; line-height:1.5;
-    font-weight:300;
-  }
-  .item-price{
-    flex-shrink:0; align-self:center;
-    font-variant-numeric:tabular-nums;
-    color:var(--menu-gold);
-    font-size:.95rem;
-    font-weight:600;
-    white-space:nowrap;
-  }
 
-  .featured{
-    border:1px solid var(--menu-gold);
-    border-radius:4px;
-    padding:16px 16px 14px;
-    background:linear-gradient(160deg, rgba(138,106,31,.12), transparent 60%);
+  .thumb{
+    position:relative; flex-shrink:0; width:66px; height:66px; border-radius:10px; overflow:hidden;
+    box-shadow:0 4px 10px -4px rgba(58,26,61,.35);
   }
-  .featured .item{border-bottom:none; padding:6px 0 0;}
-  .badge{
-    display:inline-block; font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--menu-bg); background:var(--menu-gold-strong); padding:3px 9px; border-radius:100px; margin-bottom:8px;
+  .thumb .ph{position:absolute; inset:0; background:linear-gradient(150deg, var(--plum-soft), var(--gold-deep) 130%); display:flex; align-items:center; justify-content:center;}
+  .thumb .ph svg{width:22px; height:22px; stroke:rgba(251,246,233,.85); opacity:.85;}
+  .thumb img{position:relative; z-index:1; width:100%; height:100%; object-fit:cover; display:block;}
+
+  .item-main{flex:1; min-width:0;}
+  .item-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .item-name{font-size:1.04rem; color:var(--plum); font-weight:600; margin:0; font-family:'Cormorant Garamond',serif; line-height:1.2;}
+  .item-price{flex-shrink:0; font-variant-numeric:tabular-nums; color:var(--gold-deep); font-size:.95rem; font-weight:700; white-space:nowrap; padding-top:1px;}
+  .item-desc{font-size:.76rem; color:var(--ink-soft); margin:3px 0 0; line-height:1.5; font-weight:300;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .item-meta{display:flex; flex-wrap:wrap; gap:6px; margin-top:7px;}
+  .chip{
+    display:inline-flex; align-items:center; gap:4px; font-size:.6rem; letter-spacing:.03em;
+    padding:3px 8px; border-radius:100px; border:1px solid var(--line-strong); color:var(--plum-soft);
+    background:rgba(74,31,77,.05); white-space:nowrap;
   }
+  .chip.kcal{color:var(--gold-deep); border-color:rgba(179,130,43,.4); background:rgba(179,130,43,.07);}
+  .chip svg{width:9px;height:9px;}
 
   .menu-footer{
-    max-width:640px; margin:10px auto 0; padding:26px 18px 50px;
-    display:flex; justify-content:center; gap:22px;
-    border-top:1px solid var(--menu-line);
+    max-width:680px; margin:10px auto 0; padding:26px 18px 50px;
+    display:flex; justify-content:center; gap:22px; border-top:1px solid var(--line);
   }
-  .menu-footer .icon-btn{color:var(--menu-muted);}
-  .menu-footer .icon-circle{
-    border:1px solid rgba(138,106,31,.5);
-    background:rgba(138,106,31,.06);
+  .menu-footer .icon-btn{color:var(--ink-soft);}
+  .menu-footer .icon-btn span:last-child{color:var(--muted);}
+  .menu-footer .icon-circle{border:1px solid rgba(138,106,31,.5); background:rgba(138,106,31,.06);}
+  .menu-footer .icon-circle svg{stroke:var(--plum);}
+  .menu-footer .icon-btn:hover .icon-circle{background:rgba(138,106,31,.16); border-color:var(--gold);}
+
+  /* ---------- ITEM DETAIL ---------- */
+  .detail-overlay{
+    position:fixed; inset:0; z-index:25; background:var(--bg);
+    display:none; flex-direction:column; overflow-y:auto;
+    animation:detailIn .28s ease;
   }
-  .menu-footer .icon-circle svg{stroke:var(--menu-gold-strong);}
-  .menu-footer .icon-btn:hover .icon-circle{background:rgba(138,106,31,.16); border-color:var(--menu-gold);}
+  .detail-overlay.active{display:flex;}
+  @keyframes detailIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+
+  .detail-hero{position:relative; width:100%; height:min(42vh,340px); flex-shrink:0; overflow:hidden;}
+  .detail-hero .ph{position:absolute; inset:0; background:linear-gradient(150deg, var(--plum-soft), var(--gold-deep) 130%); display:flex; align-items:center; justify-content:center;}
+  .detail-hero .ph svg{width:15%; max-width:64px; stroke:rgba(251,246,233,.85);}
+  .detail-hero img{position:relative; z-index:1; width:100%; height:100%; object-fit:cover; display:block;}
+  .detail-hero-scrim{position:absolute; inset:0; z-index:2; background:linear-gradient(0deg, var(--bg) 0%, rgba(247,240,221,0) 30%);}
+  .detail-close{
+    position:absolute; top:16px; left:16px; z-index:3;
+    width:38px;height:38px;border-radius:50%; border:1px solid rgba(251,246,233,.5);
+    background:rgba(58,26,61,.45); color:var(--cream);
+    display:flex;align-items:center;justify-content:center; cursor:pointer;
+  }
+  .detail-close svg{width:17px;height:17px;}
+
+  .detail-body{padding:6px 22px 60px; max-width:640px; margin:0 auto; width:100%;}
+  .detail-top{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-top:6px;}
+  .detail-name{font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:700; color:var(--plum); margin:0; line-height:1.15;}
+  .detail-price{flex-shrink:0; font-size:1.3rem; font-weight:700; color:var(--gold-deep); white-space:nowrap; padding-top:2px;}
+  .detail-kcal{font-size:.72rem; letter-spacing:.06em; color:var(--muted); margin-top:6px; text-transform:uppercase;}
+  .detail-desc{font-size:.92rem; line-height:1.75; color:var(--ink-soft); margin:18px 0 0; font-weight:300;}
+
+  .detail-allergens{margin-top:24px;}
+  .detail-allergens-label{font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--plum); margin:0 0 10px; font-weight:500;}
+  .detail-chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+  .detail-chip{
+    display:inline-flex; align-items:center; gap:6px; font-size:.72rem; padding:6px 12px; border-radius:100px;
+    border:1px solid var(--line-strong); color:var(--plum-soft); background:var(--panel-2);
+  }
+  .detail-chip svg{width:12px;height:12px; stroke:var(--gold-deep);}
 
   /* ---------- WIFI MODAL ---------- */
   .modal-backdrop{
-    position:fixed; inset:0; background:rgba(10,9,7,.7);
-    display:none; align-items:center; justify-content:center; z-index:20; padding:20px;
+    position:fixed; inset:0; background:rgba(30,15,20,.6);
+    display:none; align-items:center; justify-content:center; z-index:40; padding:20px;
   }
   .modal-backdrop.active{display:flex;}
   .modal{
-    background:var(--ink-2); border:1px solid var(--line); border-radius:6px;
-    padding:26px 24px; max-width:320px; width:100%; text-align:center;
-    box-shadow:var(--shadow);
+    background:var(--cream); border:1px solid var(--line-strong); border-radius:10px;
+    padding:28px 24px; max-width:320px; width:100%; text-align:center; box-shadow:var(--shadow-lg);
   }
-  .modal h3{margin:0 0 4px; color:var(--gold-soft); font-size:1.4rem;}
-  .modal p{margin:0 0 18px; color:var(--muted); font-size:.78rem; line-height:1.6;}
+  .modal h3{margin:0 0 4px; color:var(--plum); font-size:1.5rem;}
+  .modal p{margin:0 0 18px; color:var(--ink-soft); font-size:.78rem; line-height:1.6;}
   .wifi-row{
     display:flex; justify-content:space-between; align-items:center;
-    background:var(--ink); border:1px solid var(--line); border-radius:4px;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
     padding:10px 14px; margin-bottom:10px; font-size:.85rem;
   }
   .wifi-row span:first-child{color:var(--muted); font-size:.65rem; letter-spacing:.08em; text-transform:uppercase;}
-  .wifi-row span:last-child{color:var(--paper); font-weight:500;}
+  .wifi-row span:last-child{color:var(--ink); font-weight:500;}
   .modal-close{
-    margin-top:6px; width:100%; padding:11px;
-    background:none; border:1px solid var(--gold); color:var(--gold-soft);
-    border-radius:2px; cursor:pointer; letter-spacing:.1em; text-transform:uppercase; font-size:.72rem;
-    font-family:'Jost',sans-serif;
+    margin-top:6px; width:100%; padding:11px; background:var(--plum); border:1px solid var(--plum);
+    color:var(--cream); border-radius:4px; cursor:pointer; letter-spacing:.1em; text-transform:uppercase; font-size:.72rem;
   }
-  .modal-close:hover{background:rgba(201,162,76,.12);}
+  .modal-close:hover{background:var(--plum-soft);}
 
-  button:focus-visible, a:focus-visible, .pill:focus-visible{
-    outline:2px solid var(--gold-soft); outline-offset:2px;
-  }
+  button:focus-visible, a:focus-visible{outline:2px solid var(--gold-light); outline-offset:2px;}
 
   @media (prefers-reduced-motion: reduce){
-    .cta, .icon-circle, #cover{transition:none !important;}
+    .cta, .icon-circle, .cat-card, .item, .detail-overlay{transition:none !important; animation:none !important;}
   }
 </style>
 </head>
 <body>
+
+<!-- ================= LANGUAGE SWITCH ================= -->
+<div class="lang-switch" id="langSwitch">
+  <button type="button" data-lang="tr">TR</button>
+  <button type="button" data-lang="en">EN</button>
+  <button type="button" data-lang="ru">RU</button>
+</div>
 
 <!-- ================= COVER ================= -->
 <div class="screen" id="cover">
@@ -316,7 +313,7 @@
   </div>
 
   <button class="mute-btn" id="muteBtn" aria-label="Sesi aç/kapat" title="Sesi aç/kapat">
-    <svg id="muteIconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M2 2l20 20" style="display:block"/></svg>
+    <svg id="muteIconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M2 2l20 20"/></svg>
   </button>
 
   <div class="cover-top">
@@ -326,34 +323,34 @@
 
   <div class="cover-bottom">
     <button class="cta" id="viewMenuBtn">
-      Menüyü Görüntüle
+      <span id="viewMenuLabel">Menüyü Görüntüle</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button>
 
     <div class="icon-row">
-      <a class="icon-btn" id="igCover" href="#" target="_blank" rel="noopener">
-        <span class="icon-circle">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.2C4 6.4 5.4 5 7.1 5h9.8C18.6 5 20 6.4 20 8.2v7.6c0 1.8-1.4 3.2-3.1 3.2H7.1C5.4 19 4 17.6 4 15.8V8.2z"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.3" cy="7.7" r=".9" fill="currentColor" stroke="none"/></svg>
-        </span>
-        Instagram
-      </a>
       <button class="icon-btn" id="wifiBtn" type="button">
         <span class="icon-circle">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9.5a13.5 13.5 0 0 1 19 0"/><path d="M5.8 13a9 9 0 0 1 12.4 0"/><path d="M9 16.3a4.5 4.5 0 0 1 6 0"/><circle cx="12" cy="19.3" r="1" fill="currentColor" stroke="none"/></svg>
         </span>
-        WiFi
+        <span class="lbl-wifi">WiFi</span>
       </button>
-      <a class="icon-btn" id="mapsCover" href="#" target="_blank" rel="noopener">
-        <span class="icon-circle">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.9-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.1-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-        </span>
-        Değerlendir
-      </a>
       <a class="icon-btn" id="waCover" href="#" target="_blank" rel="noopener">
         <span class="icon-circle">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3.6-6.7"/><path d="M15.5 4.2 20 3l-1.1 4.6"/><path d="M9 10.2c.3 1.7 2.1 3.5 3.8 3.8.6.1 1-.5.8-1-.1-.3-.5-.7-.9-.9-.3-.1-.6 0-.8.2l-.3.3c-.6-.2-1.4-1-1.6-1.6l.3-.3c.2-.2.3-.5.2-.8-.2-.4-.6-.8-.9-.9-.5-.2-1.1.2-1 .8"/></svg>
         </span>
-        WhatsApp
+        <span class="lbl-whatsapp">WhatsApp</span>
+      </a>
+      <a class="icon-btn" id="mapsCover" href="#" target="_blank" rel="noopener">
+        <span class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.9-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.1-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+        </span>
+        <span class="lbl-review">Değerlendir</span>
+      </a>
+      <a class="icon-btn" id="igCover" href="#" target="_blank" rel="noopener">
+        <span class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.2C4 6.4 5.4 5 7.1 5h9.8C18.6 5 20 6.4 20 8.2v7.6c0 1.8-1.4 3.2-3.1 3.2H7.1C5.4 19 4 17.6 4 15.8V8.2z"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.3" cy="7.7" r=".9" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <span class="lbl-instagram">Instagram</span>
       </a>
     </div>
   </div>
@@ -362,10 +359,10 @@
 <!-- ================= WIFI MODAL ================= -->
 <div class="modal-backdrop" id="wifiModal">
   <div class="modal">
-    <h3 class="serif">WiFi</h3>
-    <p>Ağa bağlanmak için aşağıdaki bilgileri kullanabilirsiniz. Şifre için lütfen personelimize danışınız.</p>
-    <div class="wifi-row"><span>Ağ Adı</span><span id="wifiSsidVal">GODZ_CAFE</span></div>
-    <div class="wifi-row"><span>Şifre</span><span id="wifiPassVal">Personele danışınız</span></div>
+    <h3 class="serif" id="wifiModalTitle">WiFi</h3>
+    <p id="wifiModalIntro">Ağa bağlanmak için aşağıdaki bilgileri kullanabilirsiniz. Şifre için lütfen personelimize danışınız.</p>
+    <div class="wifi-row"><span id="wifiNetworkLabel">Ağ Adı</span><span id="wifiSsidVal">GODZ_CAFE</span></div>
+    <div class="wifi-row"><span id="wifiPasswordLabel">Şifre</span><span id="wifiPassVal">Personele danışınız</span></div>
     <button class="modal-close" id="wifiClose">Kapat</button>
   </div>
 </div>
@@ -374,354 +371,417 @@
 <div class="screen" id="menu">
   <div class="menu-header">
     <div class="menu-header-row">
-      <button class="back-btn" id="backBtn" aria-label="Kapağa dön">
+      <button class="back-btn" id="backBtn" aria-label="Geri">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
       </button>
       <h2 class="menu-title serif"><span id="menuTitleText">GODZ Menü</span><small id="menuTaglineText">Lezzetle, buluştuğunuz yer</small></h2>
     </div>
-    <div class="pill-nav" id="pillNav"></div>
   </div>
 
-  <div class="menu-body" id="menuBody"></div>
+  <!-- step 1: categories, grouped by section -->
+  <div id="categoriesView"></div>
+
+  <!-- step 2: items inside one category -->
+  <div id="itemsView" style="display:none;">
+    <div class="items-body" id="itemsBody"></div>
+  </div>
 
   <div class="menu-footer">
-    <a class="icon-btn" id="igFooter" href="#" target="_blank" rel="noopener">
-      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.2C4 6.4 5.4 5 7.1 5h9.8C18.6 5 20 6.4 20 8.2v7.6c0 1.8-1.4 3.2-3.1 3.2H7.1C5.4 19 4 17.6 4 15.8V8.2z"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.3" cy="7.7" r=".9" fill="currentColor" stroke="none"/></svg></span>
-      Instagram
+    <button class="icon-btn" id="wifiFooterBtn" type="button">
+      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9.5a13.5 13.5 0 0 1 19 0"/><path d="M5.8 13a9 9 0 0 1 12.4 0"/><path d="M9 16.3a4.5 4.5 0 0 1 6 0"/><circle cx="12" cy="19.3" r="1" fill="currentColor" stroke="none"/></svg></span>
+      <span class="lbl-wifi">WiFi</span>
+    </button>
+    <a class="icon-btn" id="waFooter" href="#" target="_blank" rel="noopener">
+      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3.6-6.7"/><path d="M15.5 4.2 20 3l-1.1 4.6"/><path d="M9 10.2c.3 1.7 2.1 3.5 3.8 3.8.6.1 1-.5.8-1-.1-.3-.5-.7-.9-.9-.3-.1-.6 0-.8.2l-.3.3c-.6-.2-1.4-1-1.6-1.6l.3-.3c.2-.2.3-.5.2-.8-.2-.4-.6-.8-.9-.9-.5-.2-1.1.2-1 .8"/></svg></span>
+      <span class="lbl-whatsapp">WhatsApp</span>
     </a>
     <a class="icon-btn" id="mapsFooter" href="#" target="_blank" rel="noopener">
       <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.9-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.1-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg></span>
-      Değerlendir
+      <span class="lbl-review">Değerlendir</span>
     </a>
-    <a class="icon-btn" id="waFooter" href="#" target="_blank" rel="noopener">
-      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3.6-6.7"/><path d="M15.5 4.2 20 3l-1.1 4.6"/><path d="M9 10.2c.3 1.7 2.1 3.5 3.8 3.8.6.1 1-.5.8-1-.1-.3-.5-.7-.9-.9-.3-.1-.6 0-.8.2l-.3.3c-.6-.2-1.4-1-1.6-1.6l.3-.3c.2-.2.3-.5.2-.8-.2-.4-.6-.8-.9-.9-.5-.2-1.1.2-1 .8"/></svg></span>
-      WhatsApp
+    <a class="icon-btn" id="igFooter" href="#" target="_blank" rel="noopener">
+      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.2C4 6.4 5.4 5 7.1 5h9.8C18.6 5 20 6.4 20 8.2v7.6c0 1.8-1.4 3.2-3.1 3.2H7.1C5.4 19 4 17.6 4 15.8V8.2z"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.3" cy="7.7" r=".9" fill="currentColor" stroke="none"/></svg></span>
+      <span class="lbl-instagram">Instagram</span>
     </a>
+  </div>
+</div>
+
+<!-- ================= ITEM DETAIL OVERLAY ================= -->
+<div class="detail-overlay" id="itemDetail">
+  <div class="detail-hero">
+    <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 2v20M6 2c-1.5 0-2.5 1-2.5 3s1 4 2.5 4M6 2c1.5 0 2.5 1 2.5 3s-1 4-2.5 4"/><path d="M18 2v20M18 2c-2 3-2 8 0 11"/></svg></div>
+    <img id="detailImg" alt="">
+    <div class="detail-hero-scrim"></div>
+    <button class="detail-close" id="detailClose" aria-label="Kapat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="detail-body">
+    <div class="detail-top">
+      <h3 class="detail-name" id="detailName">Ürün</h3>
+      <div class="detail-price" id="detailPrice">—</div>
+    </div>
+    <div class="detail-kcal" id="detailKcal"></div>
+    <p class="detail-desc" id="detailDesc"></p>
+    <div class="detail-allergens" id="detailAllergensBlock" style="display:none;">
+      <p class="detail-allergens-label" id="detailAllergensLabel">Alerjenler</p>
+      <div class="detail-chip-row" id="detailChipRow"></div>
+    </div>
   </div>
 </div>
 
 <script>
 (function(){
   var CONFIG = window.GODZ_CONFIG || {};
+  var MENU_DATA = [];
+  var SUPPORTED_LANGS = ['tr','en','ru'];
 
-  var DEFAULT_CATEGORIES = [
-    { id:"kahvaltilar", title:"Kahvaltılar", items:[
-      {n:'"GODZ" Tost', d:"kızarmış ekmek, üçgen peynir, kaşar peyniri, dana sucuk", p:250},
-      {n:"Kaşarlı Tost", d:"kızarmış ekmek, kaşar, zeytin, salatalık, domates, patates cips", p:250},
-      {n:"Menemen", d:"iki yumurta, çarliston biber, kabuğu soyulmuş domates, özel baharatlar", p:250},
-      {n:'"GODZ" Krok', d:"çıtır ekmek, hindi füme, kaşar, göz yumurta, mevsim salatası ve sabah meyvesi", p:250},
-      {n:"Türk Kahvaltısı", d:"kızarmış yumurta, beyaz peynir, üçgen peynir, zeytin, salatalık, domates", p:250},
-      {n:"Soğuk Sandviç", d:"sandviç ekmeği, kaşar, beyaz peynir, krem peynir, salam, zeytin ezmesi, salatalık, domates", p:250},
-      {n:"Sosisli", d:"sosis ekmeği, sosis, kaşar, salatalık turşusu, domates, özel sos", p:250}
-    ]},
-    { id:"salatalar", title:"Salatalar", items:[
-      {n:'"GODZ" Salatası', d:"avokado, tulum peyniri, cherry domates, yeşillik, kırmızı soğan, zeytinyağı", p:250},
-      {n:"Sezar Tavuklu", d:"tavuk, marul, cherry domates, parmesan, sezar sosu, kruton", p:250},
-      {n:"Yunan Salatası", d:"domates, beyaz peynir, salatalık, yeşil biber, zeytin, kırmızı soğan, zeytinyağı", p:250},
-      {n:"Kaşık Salatası", d:"salatalık, domates, soğan, zeytinyağı, nar ekşisi", p:250},
-      {n:"Peynir Tabağı", d:"kaşar peyniri, otlu peynir, beyaz peynir, ceviz, üzüm, bal", p:250}
-    ]},
-    { id:"sicak-yemekler", title:"Sıcak Yemekler", items:[
-      {n:'"GODZ" Köfte', d:"300 gr", p:345},
-      {n:"Tavuklu Sote", d:"300 gr", p:345},
-      {n:"Kıymalı Makarna", d:"300 gr", p:345},
-      {n:"Hamburger", d:"250 gr", p:345}
-    ]},
-    { id:"godz-sepeti", title:"Godz Sepeti", featured:true, note:"2 kişiliktir", items:[
-      {n:"Godz Sepeti", d:"", p:999}
-    ]},
-    { id:"cocuk-menusu", title:"Çocuk Menüsü", items:[
-      {n:"Peynirli Makarna", d:"150 gr", p:100},
-      {n:"Mini Hamburger", d:"150 gr", p:100},
-      {n:"Patates Kızartması", d:"150 gr", p:100}
-    ]},
-    { id:"kahveler", title:"Kahveler", note:"İki fiyat: sıcak servis / buzlu servis", items:[
-      {n:"Espresso", d:"", p:115},
-      {n:"Double Espresso", d:"", p:145},
-      {n:"Türk Kahvesi", d:"", p:145},
-      {n:"Flat White", d:"", p:165},
-      {n:"Amerikano (Sıcak)", d:"", p:155},
-      {n:"Amerikano (Buzlu)", d:"", p:175},
-      {n:"Latte (Sıcak)", d:"", p:185},
-      {n:"Latte (Buzlu)", d:"", p:200},
-      {n:"Latte + Şurup (Sıcak)", d:"", p:190},
-      {n:"Latte + Şurup (Buzlu)", d:"", p:235},
-      {n:"Cappuccino (Sıcak)", d:"", p:185},
-      {n:"Cappuccino (Buzlu)", d:"", p:200},
-      {n:"Mocha (Sıcak)", d:"", p:185},
-      {n:"Mocha (Buzlu)", d:"", p:235},
-      {n:"Beyaz Çikolata Mocha (Sıcak)", d:"", p:185},
-      {n:"Beyaz Çikolata Mocha (Buzlu)", d:"", p:235},
-      {n:"Matcha Latte (Sıcak)", d:"", p:200},
-      {n:"Matcha Latte (Buzlu)", d:"", p:255},
-      {n:"Çilekli Matcha Latte (Sıcak)", d:"", p:200},
-      {n:"Çilekli Matcha Latte (Buzlu)", d:"", p:255}
-    ]},
-    { id:"sicak-icecekler", title:"Sıcak İçecekler", items:[
-      {n:"Çay", d:"", p:55},
-      {n:"Büyük Çay", d:"", p:55},
-      {n:"Sütlü Çay", d:"", p:80},
-      {n:"Sahlep", d:"", p:130},
-      {n:"Sıcak Çikolata", d:"", p:155},
-      {n:"Beyaz Sıcak Çikolata", d:"", p:155},
-      {n:"Papatya Çayı", d:"", p:145},
-      {n:"Ihlamur Çayı", d:"", p:145},
-      {n:"Kış Çayı", d:"", p:145},
-      {n:"Yeşil Çay", d:"", p:145},
-      {n:"Yesminli Yeşil Çay", d:"", p:145},
-      {n:"Hibiskus Çayı", d:"", p:145}
-    ]},
-    { id:"ek-olarak", title:"Ek Olarak", items:[
-      {n:"Badem Sütü", d:"", p:55},
-      {n:"Yulaf Sütü", d:"", p:55},
-      {n:"Hindistan Cevizli Süt", d:"", p:55},
-      {n:"Laktozsuz Süt", d:"", p:55},
-      {n:"Süt", d:"", p:30},
-      {n:"Şurup", d:"", p:25}
-    ]},
-    { id:"saglikli-icecekler", title:"Sağlıklı İçecekler", items:[
-      {n:"Portakal Suyu", d:"", p:195},
-      {n:"Elma Suyu", d:"", p:275},
-      {n:"Havuç Suyu", d:"", p:195},
-      {n:"Atom", d:"", p:295}
-    ]},
-    { id:"soguk-icecekler", title:"Soğuk İçecekler", items:[
-      {n:"Su (0,5 l)", d:"", p:75},
-      {n:"Soda", d:"", p:75},
-      {n:"Coca Cola", d:"", p:145},
-      {n:"Fanta", d:"", p:145},
-      {n:"Sprite", d:"", p:145},
-      {n:"Coca Cola Zero", d:"", p:145},
-      {n:"Churchill", d:"", p:145},
-      {n:"Redbull", d:"", p:225}
-    ]},
-    { id:"limonata-mojito", title:"Limonata / Mojito", items:[
-      {n:"Klasik Limonata", d:"", p:175},
-      {n:"Nane Limonata", d:"", p:185},
-      {n:"Çilekli Limonata", d:"", p:185},
-      {n:"Klasik Mojito", d:"", p:245},
-      {n:"Blueberry Mojito", d:"", p:245},
-      {n:"Çilekli Mojito", d:"", p:245}
-    ]},
-    { id:"milkshakeler", title:"Milkshakeler", items:[
-      {n:"Vanilyalı", d:"", p:235},
-      {n:"Çikolatalı", d:"", p:235},
-      {n:"Çilekli", d:"", p:235},
-      {n:"Muzlu", d:"", p:235},
-      {n:"Karamelli", d:"", p:235}
-    ]}
-  ];
+  var ALLERGEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 16.5h.01"/><path d="M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>';
+  var KCAL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c2 3 1 4.5-.3 6C10 10 9 11.5 9 13.5A3 3 0 0 0 15 14c0-1-.4-1.6-1-2 .3 1.7-1 2.5-2 2-1.3-.6-1-2 0-3 1.7-1.7 2.5-3.5 0-9z"/></svg>';
 
-  function fmt(p){ return (Number(p)||0).toLocaleString('tr-TR') + ' ₺'; }
+  var UI = {
+    tr: {
+      viewMenu:"Menüyü Görüntüle", instagram:"Instagram", wifi:"WiFi", review:"Değerlendir", whatsapp:"WhatsApp",
+      backToCategories:"Kategorilere dön", backToCover:"Kapağa dön",
+      wifiTitle:"WiFi", wifiIntro:"Ağa bağlanmak için aşağıdaki bilgileri kullanabilirsiniz. Şifre için lütfen personelimize danışınız.",
+      networkName:"Ağ Adı", password:"Şifre", close:"Kapat", menuWord:"Menü",
+      sectionFood:"Yemekler", sectionDrink:"İçecekler",
+      allergens:"Alerjenler", kcal:"kcal",
+      count:function(n){ return n + " ürün"; }
+    },
+    en: {
+      viewMenu:"View Menu", instagram:"Instagram", wifi:"WiFi", review:"Review Us", whatsapp:"WhatsApp",
+      backToCategories:"Back to categories", backToCover:"Back to cover",
+      wifiTitle:"WiFi", wifiIntro:"You can use the details below to connect to the network. Please ask our staff for the password.",
+      networkName:"Network Name", password:"Password", close:"Close", menuWord:"Menu",
+      sectionFood:"Food", sectionDrink:"Drinks",
+      allergens:"Allergens", kcal:"kcal",
+      count:function(n){ return n + (n === 1 ? " item" : " items"); }
+    },
+    ru: {
+      viewMenu:"Смотреть меню", instagram:"Instagram", wifi:"WiFi", review:"Оставить отзыв", whatsapp:"WhatsApp",
+      backToCategories:"Назад к категориям", backToCover:"Назад на обложку",
+      wifiTitle:"WiFi", wifiIntro:"Вы можете использовать эти данные для подключения к сети. Пароль уточните у нашего персонала.",
+      networkName:"Название сети", password:"Пароль", close:"Закрыть", menuWord:"Меню",
+      sectionFood:"Еда", sectionDrink:"Напитки",
+      allergens:"Аллергены", kcal:"ккал",
+      count:function(n){ return n + " " + (n === 1 ? "позиция" : "позиций"); }
+    }
+  };
 
-  var pillNav = document.getElementById('pillNav');
-  var menuBody = document.getElementById('menuBody');
-  var menuObserver = null;
-
-  function slugify(s){
-    return String(s).toLowerCase()
-      .replace(/[çÇ]/g,'c').replace(/[ğĞ]/g,'g').replace(/[ıİiI]/g,'i')
-      .replace(/[öÖ]/g,'o').replace(/[şŞ]/g,'s').replace(/[üÜ]/g,'u')
-      .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'kategori';
+  function menuTitleFor(lang, name){
+    return lang === 'ru' ? (UI.ru.menuWord + ' ' + name) : (name + ' ' + UI[lang].menuWord);
   }
 
-  // Renders a category list into the page. Called once immediately with the
-  // built-in menu, and again later if a connected Google Sheet supplies data.
-  function renderMenu(categories){
-    if (menuObserver){ menuObserver.disconnect(); menuObserver = null; }
-    pillNav.innerHTML = '';
-    menuBody.innerHTML = '';
+  function pick(val, lang){
+    if (val == null) return '';
+    if (typeof val === 'string') return val;
+    return val[lang] || val.tr || val.en || val.ru || '';
+  }
 
-    categories.forEach(function(cat){
-      var pill = document.createElement('button');
-      pill.className = 'pill';
-      pill.type = 'button';
-      pill.textContent = cat.title;
-      pill.dataset.target = cat.id;
-      pillNav.appendChild(pill);
+  // ---------------------------------------------------------------
+  // state
+  // ---------------------------------------------------------------
+  var LANG = 'tr';
+  try{
+    var saved = localStorage.getItem('godzLang');
+    if (saved && SUPPORTED_LANGS.indexOf(saved) !== -1) LANG = saved;
+  }catch(e){}
 
-      var sec = document.createElement('section');
-      sec.className = 'category';
-      sec.id = cat.id;
+  var currentCategoryId = null;
+  var menuStep = 'categories'; // 'categories' | 'items'
 
-      var head = document.createElement('div');
-      head.className = 'category-head';
-      var h2 = document.createElement('h2');
-      h2.className = 'serif';
-      h2.textContent = cat.title;
-      var rule = document.createElement('div');
-      rule.className = 'category-rule';
-      head.appendChild(h2);
-      head.appendChild(rule);
-      sec.appendChild(head);
+  function fmt(p){ return (p == null) ? '—' : (Number(p)||0) + ' ₺'; }
 
-      if (cat.note){
-        var note = document.createElement('p');
-        note.className = 'category-note';
-        note.textContent = cat.note;
-        sec.appendChild(note);
-      }
+  function findCat(id){
+    for (var i=0;i<MENU_DATA.length;i++){ if (MENU_DATA[i].id === id) return MENU_DATA[i]; }
+    return null;
+  }
 
-      var list = document.createElement('div');
-      if (cat.featured) list.className = 'featured';
+  // ---------------------------------------------------------------
+  // rendering
+  // ---------------------------------------------------------------
+  var categoriesViewEl = document.getElementById('categoriesView');
+  var itemsBody = document.getElementById('itemsBody');
+  var itemsView = document.getElementById('itemsView');
+  var menuTitleText = document.getElementById('menuTitleText');
+  var menuTaglineText = document.getElementById('menuTaglineText');
 
-      cat.items.forEach(function(it){
-        var row = document.createElement('div');
-        row.className = 'item';
-        var main = document.createElement('div');
-        main.className = 'item-main';
-        if (cat.featured){
-          var badge = document.createElement('span');
-          badge.className = 'badge';
-          badge.textContent = cat.note || '';
-          main.appendChild(badge);
-          main.appendChild(document.createElement('br'));
-        }
-        var name = document.createElement('p');
-        name.className = 'item-name';
-        name.textContent = it.n;
-        main.appendChild(name);
-        if (it.d){
-          var desc = document.createElement('p');
-          desc.className = 'item-desc';
-          desc.textContent = it.d;
-          main.appendChild(desc);
-        }
-        var price = document.createElement('div');
-        price.className = 'item-price';
-        price.textContent = fmt(it.p);
-        row.appendChild(main);
-        row.appendChild(price);
-        list.appendChild(row);
+  function mediaMarkup(src, alt, iconSvg){
+    return '<div class="ph">' + iconSvg + '</div>' +
+      '<img src="' + (src || '') + '" alt="' + alt + '" loading="lazy" onerror="this.style.display=\'none\'">';
+  }
+
+  var CUP_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8h13v5a6 6 0 0 1-6 6H9a5 5 0 0 1-5-5V8z"/><path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3c-.6.8-.6 1.5 0 2.3M12 3c-.6.8-.6 1.5 0 2.3"/></svg>';
+  var PLATE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.2"/></svg>';
+
+  function renderCategoriesGrid(){
+    categoriesViewEl.innerHTML = '';
+    var bySection = { food: [], drink: [] };
+    MENU_DATA.forEach(function(c){ (bySection[c.section] || bySection.food).push(c); });
+
+    var order = [
+      { key:'food', label:function(){ return UI[LANG].sectionFood; } },
+      { key:'drink', label:function(){ return UI[LANG].sectionDrink; } }
+    ];
+
+    order.forEach(function(sec){
+      var list = bySection[sec.key];
+      if (!list || !list.length) return;
+      var block = document.createElement('div');
+      block.className = 'section-block';
+
+      var eyebrow = document.createElement('div');
+      eyebrow.className = 'section-eyebrow';
+      eyebrow.textContent = sec.label();
+      block.appendChild(eyebrow);
+
+      var grid = document.createElement('div');
+      grid.className = 'cat-grid';
+
+      list.forEach(function(cat){
+        var card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'cat-card';
+        card.addEventListener('click', function(){ openCategory(cat.id); });
+
+        var media = document.createElement('div');
+        media.className = 'cat-card-media';
+        media.innerHTML = mediaMarkup(cat.img, pick(cat.title, LANG), PLATE_SVG);
+        card.appendChild(media);
+
+        var scrim = document.createElement('div');
+        scrim.className = 'cat-card-scrim';
+        card.appendChild(scrim);
+
+        var body = document.createElement('div');
+        body.className = 'cat-card-body';
+        var title = document.createElement('p');
+        title.className = 'cat-card-title';
+        title.textContent = pick(cat.title, LANG);
+        var count = document.createElement('div');
+        count.className = 'cat-card-count';
+        count.textContent = UI[LANG].count(cat.items.length);
+        body.appendChild(title);
+        body.appendChild(count);
+        card.appendChild(body);
+
+        grid.appendChild(card);
       });
 
-      sec.appendChild(list);
-      menuBody.appendChild(sec);
+      block.appendChild(grid);
+      categoriesViewEl.appendChild(block);
     });
-
-    var sections = Array.prototype.slice.call(document.querySelectorAll('.category'));
-    var pills = Array.prototype.slice.call(document.querySelectorAll('.pill'));
-    function setActivePill(id){
-      pills.forEach(function(p){ p.classList.toggle('active', p.dataset.target === id); });
-    }
-    if (pills[0]) setActivePill(pills[0].dataset.target);
-
-    menuObserver = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if (entry.isIntersecting){ setActivePill(entry.target.id); }
-      });
-    }, { rootMargin: '-120px 0px -70% 0px' });
-    sections.forEach(function(s){ menuObserver.observe(s); });
   }
 
-  pillNav.addEventListener('click', function(e){
-    var btn = e.target.closest('.pill');
-    if (!btn) return;
-    document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth', block:'start'});
-  });
-
-  renderMenu(DEFAULT_CATEGORIES);
-
-  // ---- optional live menu from a published Google Sheet (CSV) ----
-  // Expected columns (any order): Kategori, Ürün, Açıklama, Fiyat, Not, Öne Çıkar, Görünür
-  // See README.md for how to publish the sheet and set CONFIG.sheetCsvUrl.
-  function parseCSV(text){
-    var rows = []; var row = []; var field = ''; var inQuotes = false;
-    for (var i = 0; i < text.length; i++){
-      var c = text[i];
-      if (inQuotes){
-        if (c === '"'){
-          if (text[i+1] === '"'){ field += '"'; i++; }
-          else { inQuotes = false; }
-        } else { field += c; }
-      } else if (c === '"'){ inQuotes = true; }
-      else if (c === ','){ row.push(field); field = ''; }
-      else if (c === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
-      else if (c === '\r'){ /* ignore */ }
-      else { field += c; }
-    }
-    if (field.length || row.length){ row.push(field); rows.push(row); }
-    return rows;
+  function allergenChips(str, small){
+    if (!str) return '';
+    var parts = str.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    return parts.map(function(p){
+      return small
+        ? '<span class="chip">' + ALLERGEN_SVG + p + '</span>'
+        : '<span class="detail-chip">' + ALLERGEN_SVG + p + '</span>';
+    }).join('');
   }
 
-  function normalizeHeader(s){
-    return String(s||'').toLowerCase()
-      .replace(/[çÇ]/g,'c').replace(/[ğĞ]/g,'g').replace(/[ıİiI]/g,'i')
-      .replace(/[öÖ]/g,'o').replace(/[şŞ]/g,'s').replace(/[üÜ]/g,'u')
-      .replace(/[^a-z0-9]/g,'');
-  }
+  function renderItemsFor(catId){
+    var cat = findCat(catId);
+    itemsBody.innerHTML = '';
+    if (!cat) return;
 
-  function truthy(s){
-    var v = String(s||'').trim().toLowerCase();
-    return v === 'evet' || v === 'true' || v === '1' || v === 'yes';
-  }
-  function falsy(s){
-    var v = String(s||'').trim().toLowerCase();
-    return v === 'hayir' || v === 'hayır' || v === 'false' || v === '0' || v === 'no';
-  }
+    cat.items.forEach(function(it, idx){
+      var row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'item';
+      row.addEventListener('click', function(){ openItemDetail(catId, idx); });
 
-  function categoriesFromRows(rows){
-    if (!rows || !rows.length) return null;
-    var header = rows[0].map(normalizeHeader);
-    var col = {
-      kategori: header.indexOf('kategori'),
-      urun: header.indexOf('urun'),
-      aciklama: header.indexOf('aciklama'),
-      fiyat: header.indexOf('fiyat'),
-      not: header.indexOf('not'),
-      onecikar: header.indexOf('onecikar'),
-      gorunur: header.indexOf('gorunur')
-    };
-    if (col.kategori === -1 || col.urun === -1 || col.fiyat === -1) return null;
+      var thumb = document.createElement('div');
+      thumb.className = 'thumb';
+      thumb.innerHTML = mediaMarkup(it.img, pick(it.n, LANG), CUP_SVG);
+      row.appendChild(thumb);
 
-    var order = []; var map = {};
-    for (var r = 1; r < rows.length; r++){
-      var row = rows[r];
-      if (!row || !row.length) continue;
-      var kategori = (row[col.kategori] || '').trim();
-      var urun = (row[col.urun] || '').trim();
-      if (!kategori || !urun) continue;
-      if (col.gorunur !== -1 && falsy(row[col.gorunur])) continue;
+      var main = document.createElement('div');
+      main.className = 'item-main';
 
-      if (!map[kategori]){
-        map[kategori] = { id: slugify(kategori), title: kategori, items: [], note: '', featured: false };
-        order.push(kategori);
+      var top = document.createElement('div');
+      top.className = 'item-top';
+      var name = document.createElement('p');
+      name.className = 'item-name';
+      name.textContent = pick(it.n, LANG);
+      var price = document.createElement('div');
+      price.className = 'item-price';
+      price.textContent = fmt(it.p);
+      top.appendChild(name);
+      top.appendChild(price);
+      main.appendChild(top);
+
+      var descTxt = pick(it.d, LANG);
+      if (descTxt){
+        var desc = document.createElement('p');
+        desc.className = 'item-desc';
+        desc.textContent = descTxt;
+        main.appendChild(desc);
       }
-      var cat = map[kategori];
-      if (col.not !== -1){
-        var noteVal = (row[col.not] || '').trim();
-        if (noteVal && !cat.note) cat.note = noteVal;
-      }
-      if (col.onecikar !== -1 && truthy(row[col.onecikar])) cat.featured = true;
 
-      var priceRaw = col.fiyat !== -1 ? (row[col.fiyat] || '').trim().replace(',', '.').replace(/[^0-9.]/g,'') : '';
-      cat.items.push({
-        n: urun,
-        d: col.aciklama !== -1 ? (row[col.aciklama] || '').trim() : '',
-        p: parseFloat(priceRaw) || 0
-      });
-    }
-    var categories = order.map(function(k){ return map[k]; });
-    return categories.length ? categories : null;
+      var algTxt = pick(it.alg, LANG);
+      if (algTxt || it.kcal){
+        var meta = document.createElement('div');
+        meta.className = 'item-meta';
+        var html = '';
+        if (it.kcal) html += '<span class="chip kcal">' + KCAL_SVG + it.kcal + ' ' + UI[LANG].kcal + '</span>';
+        html += allergenChips(algTxt, true);
+        meta.innerHTML = html;
+        main.appendChild(meta);
+      }
+
+      row.appendChild(main);
+      itemsBody.appendChild(row);
+    });
   }
 
-  function loadLiveMenu(){
-    var url = CONFIG.sheetCsvUrl;
-    if (!url) return;
-    var bust = url + (url.indexOf('?') === -1 ? '?' : '&') + '_ts=' + Date.now();
-    fetch(bust, { cache: 'no-store' })
-      .then(function(res){ return res.ok ? res.text() : Promise.reject(new Error('HTTP ' + res.status)); })
-      .then(function(text){
-        var categories = categoriesFromRows(parseCSV(text));
-        if (categories){ renderMenu(categories); }
+  function updateMenuHeader(){
+    if (menuStep === 'items'){
+      var cat = findCat(currentCategoryId);
+      menuTitleText.textContent = cat ? pick(cat.title, LANG) : '';
+      menuTaglineText.textContent = cat ? UI[LANG].count(cat.items.length) : '';
+    } else {
+      menuTitleText.textContent = menuTitleFor(LANG, CONFIG.businessName || 'GODZ');
+      menuTaglineText.textContent = pick(CONFIG.tagline, LANG) || '';
+    }
+  }
+
+  function openCategory(id){
+    currentCategoryId = id;
+    menuStep = 'items';
+    renderItemsFor(id);
+    updateMenuHeader();
+    categoriesViewEl.style.display = 'none';
+    itemsView.style.display = 'block';
+    document.getElementById('menu').scrollTo({top:0});
+    window.scrollTo(0,0);
+  }
+
+  function backToCategories(){
+    menuStep = 'categories';
+    currentCategoryId = null;
+    updateMenuHeader();
+    itemsView.style.display = 'none';
+    categoriesViewEl.style.display = 'block';
+    window.scrollTo(0,0);
+  }
+
+  function renderAll(){
+    renderCategoriesGrid();
+    if (menuStep === 'items' && currentCategoryId) renderItemsFor(currentCategoryId);
+    updateMenuHeader();
+  }
+
+  function loadMenu(){
+    fetch('/api/menu', { cache: 'no-store' })
+      .then(function(res){ return res.ok ? res.json() : Promise.reject(new Error('HTTP ' + res.status)); })
+      .then(function(data){
+        MENU_DATA = (data && data.categories) || [];
+        renderAll();
       })
       .catch(function(err){
-        console.warn('GODZ menü: Google Sheet okunamadı, dahili menü gösteriliyor.', err);
+        console.warn('GODZ menü: /api/menu okunamadı.', err);
       });
   }
-  loadLiveMenu();
 
-  // ---- apply business config to links/text ----
+  loadMenu();
+
+  // ---------------------------------------------------------------
+  // item detail overlay
+  // ---------------------------------------------------------------
+  var itemDetail = document.getElementById('itemDetail');
+  var detailImg = document.getElementById('detailImg');
+  var detailName = document.getElementById('detailName');
+  var detailPrice = document.getElementById('detailPrice');
+  var detailKcal = document.getElementById('detailKcal');
+  var detailDesc = document.getElementById('detailDesc');
+  var detailAllergensBlock = document.getElementById('detailAllergensBlock');
+  var detailChipRow = document.getElementById('detailChipRow');
+
+  function openItemDetail(catId, idx){
+    var cat = findCat(catId);
+    if (!cat) return;
+    var it = cat.items[idx];
+    if (!it) return;
+
+    detailImg.src = it.img || '';
+    detailImg.style.display = '';
+    detailImg.alt = pick(it.n, LANG);
+    detailName.textContent = pick(it.n, LANG);
+    detailPrice.textContent = fmt(it.p);
+    detailKcal.textContent = it.kcal ? (it.kcal + ' ' + UI[LANG].kcal) : '';
+    detailDesc.textContent = pick(it.d, LANG);
+
+    var algTxt = pick(it.alg, LANG);
+    if (algTxt){
+      detailAllergensBlock.style.display = '';
+      detailChipRow.innerHTML = allergenChips(algTxt, false);
+    } else {
+      detailAllergensBlock.style.display = 'none';
+    }
+
+    itemDetail.classList.add('active');
+    itemDetail.scrollTop = 0;
+  }
+
+  document.getElementById('detailClose').addEventListener('click', function(){
+    itemDetail.classList.remove('active');
+  });
+
+  // ---------------------------------------------------------------
+  // language switch
+  // ---------------------------------------------------------------
+  function setLangStatic(lang){
+    document.documentElement.lang = lang;
+    Array.prototype.forEach.call(document.querySelectorAll('#langSwitch button'), function(b){
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+
+    document.getElementById('viewMenuLabel').textContent = UI[lang].viewMenu;
+    Array.prototype.forEach.call(document.querySelectorAll('.lbl-instagram'), function(el){ el.textContent = UI[lang].instagram; });
+    Array.prototype.forEach.call(document.querySelectorAll('.lbl-wifi'), function(el){ el.textContent = UI[lang].wifi; });
+    Array.prototype.forEach.call(document.querySelectorAll('.lbl-review'), function(el){ el.textContent = UI[lang].review; });
+    Array.prototype.forEach.call(document.querySelectorAll('.lbl-whatsapp'), function(el){ el.textContent = UI[lang].whatsapp; });
+
+    document.getElementById('wifiModalTitle').textContent = UI[lang].wifiTitle;
+    document.getElementById('wifiModalIntro').textContent = UI[lang].wifiIntro;
+    document.getElementById('wifiNetworkLabel').textContent = UI[lang].networkName;
+    document.getElementById('wifiPasswordLabel').textContent = UI[lang].password;
+    document.getElementById('wifiClose').textContent = UI[lang].close;
+    document.getElementById('wifiPassVal').textContent = pick(CONFIG.wifiPasswordNote, lang) || UI[lang].password;
+    document.getElementById('detailAllergensLabel').textContent = UI[lang].allergens;
+
+    document.getElementById('backBtn').setAttribute('aria-label',
+      menuStep === 'items' ? UI[lang].backToCategories : UI[lang].backToCover);
+
+    var tagline = document.getElementById('taglineCover');
+    if (tagline) tagline.textContent = pick(CONFIG.tagline, lang);
+  }
+
+  function setLang(lang){
+    if (SUPPORTED_LANGS.indexOf(lang) === -1) return;
+    LANG = lang;
+    try{ localStorage.setItem('godzLang', lang); }catch(e){}
+    setLangStatic(lang);
+    applyConfig();
+    renderAll();
+    if (itemDetail.classList.contains('active')){
+      itemDetail.classList.remove('active');
+    }
+  }
+
+  document.getElementById('langSwitch').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-lang]');
+    if (btn) setLang(btn.dataset.lang);
+  });
+
+  // ---------------------------------------------------------------
+  // business config -> links
+  // ---------------------------------------------------------------
   function applyConfig(){
     var ig = '#';
     if (CONFIG.instagramUrl){
@@ -729,35 +789,52 @@
     }
     var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(CONFIG.mapsQuery || CONFIG.displayName || 'Cafe');
     var wa = 'https://wa.me/' + String(CONFIG.whatsappNumber || '').replace(/[^0-9]/g,'') +
-      '?text=' + encodeURIComponent(CONFIG.whatsappMessage || '');
+      '?text=' + encodeURIComponent(pick(CONFIG.whatsappMessage, LANG));
 
     ['igCover','igFooter'].forEach(function(id){ var el = document.getElementById(id); if (el) el.href = ig; });
     ['mapsCover','mapsFooter'].forEach(function(id){ var el = document.getElementById(id); if (el) el.href = maps; });
     ['waCover','waFooter'].forEach(function(id){ var el = document.getElementById(id); if (el) el.href = wa; });
 
     var logo = document.getElementById('logoImg'); if (logo && CONFIG.displayName) logo.alt = CONFIG.displayName;
-    var tagline = document.getElementById('taglineCover'); if (tagline && CONFIG.tagline) tagline.textContent = CONFIG.tagline;
-    var menuTitle = document.getElementById('menuTitleText'); if (menuTitle) menuTitle.textContent = (CONFIG.businessName || 'GODZ') + ' Menü';
-    var menuTagline = document.getElementById('menuTaglineText'); if (menuTagline && CONFIG.tagline) menuTagline.textContent = CONFIG.tagline;
     var ssid = document.getElementById('wifiSsidVal'); if (ssid && CONFIG.wifiSsid) ssid.textContent = CONFIG.wifiSsid;
-    var pass = document.getElementById('wifiPassVal'); if (pass && CONFIG.wifiPasswordNote) pass.textContent = CONFIG.wifiPasswordNote;
   }
+
+  applyConfig();
+  setLangStatic(LANG);
   applyConfig();
 
-  // ---- view switching ----
+  // ---------------------------------------------------------------
+  // view switching
+  // ---------------------------------------------------------------
   var cover = document.getElementById('cover');
   var menu = document.getElementById('menu');
   var video = document.getElementById('heroVideo');
 
   document.getElementById('viewMenuBtn').addEventListener('click', function(){
+    menuStep = 'categories';
+    currentCategoryId = null;
+    itemsView.style.display = 'none';
+    categoriesViewEl.style.display = 'block';
+    updateMenuHeader();
     menu.classList.add('active');
+    document.body.classList.add('view-menu');
     window.scrollTo(0,0);
     try{ video.pause(); }catch(e){}
     cover.style.display = 'none';
   });
 
   document.getElementById('backBtn').addEventListener('click', function(){
+    if (itemDetail.classList.contains('active')){
+      itemDetail.classList.remove('active');
+      return;
+    }
+    if (menuStep === 'items'){
+      backToCategories();
+      document.getElementById('backBtn').setAttribute('aria-label', UI[LANG].backToCover);
+      return;
+    }
     menu.classList.remove('active');
+    document.body.classList.remove('view-menu');
     cover.style.display = 'flex';
     try{ video.play(); }catch(e){}
   });
@@ -766,12 +843,14 @@
   var muteBtn = document.getElementById('muteBtn');
   muteBtn.addEventListener('click', function(){
     video.muted = !video.muted;
-    muteBtn.style.borderColor = video.muted ? 'rgba(239,230,210,.35)' : 'var(--gold-soft)';
+    muteBtn.style.borderColor = video.muted ? 'rgba(251,246,233,.4)' : 'var(--gold-light)';
   });
 
   // ---- wifi modal ----
   var wifiModal = document.getElementById('wifiModal');
-  document.getElementById('wifiBtn').addEventListener('click', function(){ wifiModal.classList.add('active'); });
+  function openWifi(){ wifiModal.classList.add('active'); }
+  document.getElementById('wifiBtn').addEventListener('click', openWifi);
+  document.getElementById('wifiFooterBtn').addEventListener('click', openWifi);
   document.getElementById('wifiClose').addEventListener('click', function(){ wifiModal.classList.remove('active'); });
   wifiModal.addEventListener('click', function(e){ if (e.target === wifiModal) wifiModal.classList.remove('active'); });
 })();
