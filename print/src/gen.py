@@ -37,12 +37,8 @@ def item_html(it, lang, mode):
         sub = it["tr"] if lang != "tr" and it["tr"].lower() != name.lower() else ""
         desc = it["desc"][lang] if it["desc"] else ""
     else:  # trilingual signboard
-        alts = []
-        for l in ("en", "ru"):
-            if it[l].lower() != name.lower() and it[l] not in alts:
-                alts.append(it[l])
-        sub = " · ".join(alts)
-        desc = it["desc"]["tr"] if it["desc"] else ""
+        sub = tri_alts(it, name)
+        desc = ""
     out = f'<div class="it"><div class="row"><span class="nm">{E(name)}</span><span class="dots"></span><span class="pr">{price(it["price"])}</span></div>'
     if mode == "single":
         u = UI[lang]
@@ -50,11 +46,24 @@ def item_html(it, lang, mode):
         badges = "".join(f'<span class="ab">{n}</span>' for n in it["alg"])
         sub_html = f'<span class="sub">{E(sub)}</span>' if sub else ""
         out += f'<div class="meta">{sub_html}<span class="kc">◆ {E(kcal)}</span>{badges}</div>'
+    elif mode == "tri":
+        if sub:
+            out += f'<div class="sub">{sub}</div>'
     elif sub:
         out += f'<div class="sub">{E(sub)}</div>'
     if desc:
         out += f'<div class="ds">{E(desc)}</div>'
     return out + "</div>"
+
+
+def tri_alts(d, name):
+    # Signboard sub-line: English in purple, Russian in gold; skip repeats of the Turkish name.
+    parts, seen = [], {name.lower()}
+    for l in ("en", "ru"):
+        if d[l].lower() not in seen:
+            seen.add(d[l].lower())
+            parts.append(f'<span class="{l}">{E(d[l])}</span>')
+    return '<span class="sep"> · </span>'.join(parts)
 
 
 def section_html(key, lang, mode):
@@ -63,9 +72,8 @@ def section_html(key, lang, mode):
     if mode == "single":
         alt = ""
     else:
-        alts = [s["title"][l] for l in ("en", "ru") if s["title"][l].lower() != title.lower()]
-        alt = " · ".join(dict.fromkeys(alts))
-    h = f'<h2>{E(title)}' + (f'<span class="alt">{E(alt)}</span>' if alt else "") + "</h2>"
+        alt = tri_alts(s["title"], title)
+    h = f'<h2>{E(title)}' + (f'<span class="alt">{alt if mode == "tri" else E(alt)}</span>' if alt else "") + "</h2>"
     items = "".join(item_html(it, lang, mode) for it in s["items"])
     return f'<div class="sec">{h}<div class="rule"></div><div class="items">{items}</div></div>'
 
@@ -210,10 +218,15 @@ SIGN_CSS = """
 .col{flex:1 1 0;gap:14pt}
 .sec h2{font-size:19pt;letter-spacing:.07em;margin-bottom:5pt;display:flex;flex-direction:column}
 .sec h2 .alt{font-size:13pt;margin:4pt 0 0}
+.sec h2 .alt .en{color:var(--purple)}
+.sec h2 .alt .ru{color:var(--gold)}
 .sec .rule{margin-bottom:6pt}
 .items{display:flex;flex-direction:column;gap:5.5pt}
-.it .nm,.it .pr{font-size:12.5pt}
-.it .sub{font-family:Manrope,sans-serif;font-style:normal;color:var(--mute);font-size:9pt;font-weight:400;margin-top:1pt}
+.it .nm,.it .pr{font-size:11.5pt}
+.it .sub{font-family:Manrope,sans-serif;font-style:normal;font-size:11.5pt;font-weight:500;line-height:1.2;margin-top:1pt}
+.it .sub .en{color:var(--purple)}
+.it .sub .ru{color:var(--gold)}
+.it .sub .sep{color:var(--mute)}
 .it .ds{font-size:9pt;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:11pt;color:var(--gold);line-height:1.15;margin-top:1pt}
 .band{height:74pt;background:var(--purple);display:flex;align-items:center;justify-content:center;gap:34pt;color:#f3e7c9;font-size:11pt;letter-spacing:.3em}
 .band .st{color:var(--gold2);letter-spacing:0}
