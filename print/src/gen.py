@@ -64,79 +64,71 @@ def section_html(key, lang, mode):
     return f'<div class="sec">{h}<div class="rule"></div><div class="items">{items}</div></div>'
 
 
-# ---------------------------------------------------------------- paper menu 42x14
+# ---------------------------------------------------------------- paper menu 14x42 (portrait)
 
 PAPER_CSS = """
-@page{size:420mm 140mm;margin:0}
-.page{width:420mm;height:140mm}
-.cols{padding:8mm 9mm 6mm;gap:7mm}
-.col{flex:1 1 0;gap:3.2mm}
-.col.cover{flex:0 0 72mm}
-.sec h2{font-size:12.5pt;margin-bottom:1.3mm}
-.sec h2 .alt{font-size:10pt}
-.sec .rule{margin-bottom:1.6mm}
-.items{display:flex;flex-direction:column;gap:.95mm}
-.col.food .items{gap:2.6mm}
-.col.food .sec{margin-bottom:2mm}
-.it .nm{font-size:8.4pt}
-.it .pr{font-size:8.4pt}
-.it .sub{font-size:8.2pt;line-height:1;margin-top:0}
+@page{size:140mm 420mm;margin:0}
+.page{width:140mm;height:420mm;display:flex;flex-direction:column}
+.frame{position:absolute;inset:4mm;border:1px solid var(--gold);pointer-events:none}
+.frame2{position:absolute;inset:5.6mm;border:1px solid rgba(195,154,69,.4);pointer-events:none}
+.cols{flex:1;min-height:0;height:auto;padding:7mm 11mm 6mm;gap:7mm}
+.col{flex:1 1 0;gap:7.5mm}
+.sec h2{font-size:13pt;margin-bottom:1.3mm}
+.sec .rule{margin-bottom:1.8mm}
+.items{display:flex;flex-direction:column;gap:2.6mm}
+.col.food .items{gap:3.6mm}
+html[lang=tr] .items{gap:4.4mm}
+html[lang=tr] .col.food .items{gap:5mm}
+html[lang=tr] .col{gap:9mm}
+.it .nm{font-size:8.6pt;white-space:normal;min-width:0}
+.it .pr{font-size:8.6pt}
+.it .sub{font-size:8.6pt;line-height:1;margin-top:0}
 .it .ds{font-size:7pt;line-height:1.3;margin-top:.4mm}
-.topline{position:absolute;top:3.6mm;left:0;right:0;text-align:center;font-size:5.6pt;letter-spacing:.4em;color:var(--gold)}
-.cover{position:relative;border:1px solid var(--gold);outline:1px solid rgba(195,154,69,.45);outline-offset:-2.2mm;
-  align-items:center;justify-content:center;text-align:center;padding:5mm 4mm}
-.cover img{width:54mm}
-.cover .mn{font-family:'Cormorant Garamond',serif;font-weight:500;color:var(--purple);font-size:30pt;letter-spacing:.32em;margin:3mm 0 0 .32em}
-.cover .tg{font-size:6.2pt;letter-spacing:.32em;color:var(--ink);margin-top:2mm}
-.cover .band{position:absolute;left:0;right:0;bottom:0;height:24mm;background:var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2mm}
-.cover .band .ig{font-size:7pt;letter-spacing:.3em;color:#f3e7c9}
-.cover .band .ct{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold2);font-size:11pt}
-.cover .band .st{color:var(--gold2);font-size:8pt}
-.cover .inner{margin-bottom:22mm;display:flex;flex-direction:column;align-items:center}
-.info .sec{margin-bottom:auto}
-.info .notes{border-top:1px solid var(--gold);padding-top:2.4mm;display:flex;flex-direction:column;gap:1.4mm;font-size:6.6pt;color:var(--mute);line-height:1.35}
-.info .notes span{color:var(--gold)}
-.info .logo2{display:flex;flex-direction:column;align-items:center;gap:1.5mm;margin-bottom:3mm}
-.info .logo2 img{width:30mm}
-.info .logo2 .ig{font-size:7pt;letter-spacing:.3em;color:var(--purple)}
+.topline{text-align:center;font-size:5.6pt;letter-spacing:.4em;color:var(--gold);padding-top:9mm}
+.cover{display:flex;flex-direction:column;align-items:center;text-align:center;padding:12mm 0 7mm;margin:0 11mm;border-bottom:1px solid var(--gold)}
+.cover img{width:58mm}
+.cover .mn{font-family:'Cormorant Garamond',serif;font-weight:500;color:var(--purple);font-size:32pt;letter-spacing:.32em;margin:4mm 0 0 .32em;line-height:1}
+.cover .tg{font-size:6.4pt;letter-spacing:.32em;color:var(--ink);margin-top:3mm}
+.band{height:26mm;flex:none;background:var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2mm}
+.band .ig{font-size:7pt;letter-spacing:.3em;color:#f3e7c9}
+.band .ct{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold2);font-size:11pt}
+.band .st{color:var(--gold2);font-size:8pt}
+.notes{margin:0 11mm 7mm;border-top:1px solid var(--gold);padding-top:2.6mm;display:flex;flex-direction:column;gap:1.3mm;font-size:6.6pt;color:var(--mute);line-height:1.35}
+.notes span{color:var(--gold)}
+.page .band{position:relative;z-index:1}
 """
 
 
 def cover(lang):
     u = UI[lang]
-    return f"""<div class="col cover"><div class="inner"><img src="godz-logo.png" alt="GODZ Cafe">
-<div class="mn">{E(u['menu'])}</div><div class="tg">{E(u['tagline'])}</div></div>
-<div class="band"><div class="st">✦</div><div class="ig">@GODZ_ALANYA</div><div class="ct">{E(u['city'])}</div></div></div>"""
+    return f"""<div class="cover"><img src="godz-logo.png" alt="GODZ Cafe">
+<div class="mn">{E(u['menu'])}</div><div class="tg">{E(u['tagline'])}</div></div>"""
 
 
-def info(lang):
+def band(lang):
+    return f'<div class="band"><div class="st">✦</div><div class="ig">@GODZ_ALANYA</div><div class="ct">{E(UI[lang]["city"])}</div></div>'
+
+
+def notes(lang):
     u = UI[lang]
-    return f"""<div class="col info">{section_html("frozen", lang, "single")}<div class="logo2"><img src="godz-logo.png" alt="GODZ Cafe"><div class="ig">@GODZ_ALANYA</div></div>
-<div class="notes"><div><span>✦</span> {E(u['vat'])}</div><div><span>✦</span> {E(u['allergy'])}</div></div></div>"""
+    return f'<div class="notes"><div><span>✦</span> {E(u["vat"])}</div><div><span>✦</span> {E(u["allergy"])}</div></div>'
 
 
 PAPER_LAYOUT = [
-    ["cover", ("food", ["doner"]), ("food", ["soup_salad", "sides", "dessert"]), ["hot_coffee"], ["iced_coffee", "frappe"]],
-    [["hot_drinks"], ["matcha", "milkshake"], ["juices", "lemonade", "mojito"], ["soft"], "info"],
+    ("front", [("food", ["doner", "soup_salad", "sides", "dessert"]), ("", ["hot_coffee", "iced_coffee", "frappe"])]),
+    ("back", [("", ["hot_drinks", "matcha", "milkshake", "juices"]), ("", ["soft", "frozen", "lemonade", "mojito"])]),
 ]
 
 
 def paper(lang):
     pages = []
-    for cols in PAPER_LAYOUT:
-        parts = []
-        for c in cols:
-            if c == "cover":
-                parts.append(cover(lang))
-            elif c == "info":
-                parts.append(info(lang))
-            else:
-                cls = "col"
-                if isinstance(c, tuple):
-                    cls += " " + c[0]
-                    c = c[1]
-                parts.append(f'<div class="{cls}">' + "".join(section_html(k, lang, "single") for k in c) + "</div>")
-        pages.append(f'<div class="page"><div class="topline">GODZ ✦ CAFE</div><div class="cols">{"".join(parts)}</div></div>')
+    for side, cols in PAPER_LAYOUT:
+        body = "".join(f'<div class="col {cls}">' + "".join(section_html(k, lang, "single") for k in keys) + "</div>"
+                       for cls, keys in cols)
+        head = cover(lang) if side == "front" else '<div class="topline">GODZ ✦ CAFE</div>'
+        foot = "" if side == "front" else notes(lang)
+        pages.append(f'<div class="page">{head}<div class="cols">{body}</div>{foot}{band(lang)}'
+                     '<div class="frame"></div><div class="frame2"></div></div>')
     return f'<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><style>{BASE_CSS}{PAPER_CSS}</style></head><body>{"".join(pages)}</body></html>'
 
 

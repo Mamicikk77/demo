@@ -1,6 +1,6 @@
 # Basılı menüler
 
-- `menu-tr.pdf`, `menu-en.pdf`, `menu-ru.pdf` — 42 × 14 cm kağıt menü (2 sayfa: ön / arka), her dil ayrı.
+- `menu-tr.pdf`, `menu-en.pdf`, `menu-ru.pdf` — 14 × 42 cm (dikey) kağıt menü (2 sayfa: ön / arka), her dil ayrı.
 - `tabela.pdf` — kare tabela menü (1434 × 1434 pt), Türkçe + İngilizce/Rusça alt satırlar.
 
 Yeniden üretmek için:
