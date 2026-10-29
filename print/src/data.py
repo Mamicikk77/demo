@@ -213,3 +213,58 @@ UI = {
            "allergy": "Если у вас аллергия или особые предпочтения в питании, сообщите персоналу.",
            "city": "Аланья"},
 }
+
+# Approximate calories and allergen numbers (see ALLERGENS), keyed by Turkish name.
+# Drinks carry the values from the previous printed menu; food values are estimates
+# from standard recipes and should be checked against the kitchen's own recipes.
+# kcal None means it varies (e.g. soup of the day).
+NUTRI = {
+    "Pilav Üstü Döner": (1050, [1, 2]), "İskender (Et Dönerden)": (950, [1, 2]),
+    "Döner Burger": (850, [1, 7]), "Et Döner Dürüm": (780, [1]), "Et Döner Lavaş": (780, [1]),
+    "Günün Çorbası": (None, []), "Çoban Salatası": (120, []), "Akdeniz Salatası": (280, [2]),
+    "Pirinç Pilavı": (350, [2]), "Patates Kızartması": (480, []), "Yoğurt": (120, [2]),
+    "Kabak Tatlısı": (450, [4, 7]),
+    "Americano": (10, []), "Cafe Latte": (190, [2]), "White Chocolate Latte": (330, [2]),
+    "Cappuccino": (130, [2]), "Flat White": (120, [2]), "Macchiato": (25, [2]), "Espresso": (5, []),
+    "Duble Espresso": (10, []), "Türk Kahvesi": (10, []), "Duble Türk Kahvesi": (20, []),
+    "Vanilya Latte": (250, [2]), "Karamel Latte": (260, [2]), "Cortado": (60, [2]),
+    "Ristretto": (5, []), "Mocha": (290, [2]),
+    "Ice Americano": (10, []), "Ice Latte": (150, [2]), "Ice White Chocolate Mocha": (340, [2]),
+    "Ice Cappuccino": (120, [2]), "Ice Vanilya Latte": (220, [2]), "Ice Karamel Latte": (230, [2]),
+    "Ice Mocha": (260, [2]), "Ice Bumble Coffee": (160, []),
+    "Espresso Frappe": (380, [2]), "Karamel Frappe": (420, [2]), "Vanilya Frappe": (400, [2]),
+    "Çikolata Frappe": (440, [2]),
+    "Çay": (2, []), "Duble Çay": (4, []), "Yeşil Çay": (2, []), "Ada Çayı": (2, []),
+    "Ihlamur Çayı": (2, []), "Kış Çayı": (60, []), "Jasmine Çayı": (2, []), "Papatya Çayı": (2, []),
+    "Hibiskus Çayı": (5, []), "Sıcak Süt": (150, [2]), "Sıcak Çikolata": (340, [2]),
+    "Sıcak Beyaz Çikolata": (380, [2]), "Sahlep": (280, [2]),
+    "Green Matcha Latte": (190, [2]), "Strawberry Matcha Latte": (230, [2]), "Blue Matcha Latte": (180, [2]),
+    "Çikolatalı Milkshake": (520, [2]), "Çilekli Milkshake": (460, [2]), "Vanilyalı Milkshake": (470, [2]),
+    "Muzlu Milkshake": (480, [2]), "Karamelli Milkshake": (510, [2]), "Mangolu Milkshake": (450, [2]),
+    "Portakal Suyu": (110, []), "Elma Suyu": (120, []), "Havuç Suyu": (90, []), "Atom": (420, [2, 4]),
+    "Klasik Limonata": (160, []), "Çilekli Limonata": (180, []), "Naneli Limonata": (160, []),
+    "Klasik Mojito": (150, []), "Çilekli Mojito": (170, []),
+    "Mango Frozen": (240, []), "Çilek Frozen": (220, []), "Arizona Dream Frozen": (250, []),
+    "Egzotik Frozen": (240, []), "Şeftali Frozen": (230, []),
+    "Su": (0, []), "Soda": (0, []), "Coca-Cola": (140, []), "Fanta": (150, []), "Sprite": (140, []),
+    "Fuse Tea Şeftali": (90, []), "Fuse Tea Mango Ananas": (90, []), "Fuse Tea Limon": (90, []),
+    "Coca-Cola Zero": (1, []), "Red Bull": (115, []), "Red Bull Zero": (5, []), "Churchill": (15, []),
+    "Ayran": (90, [2]), "Şalgam": (25, []),
+}
+
+ALLERGENS = {
+    "tr": ["Gluten", "Süt", "Yumurta", "Kabuklu yemiş", "Yer fıstığı", "Soya", "Susam", "Hardal", "Kereviz", "Sülfit"],
+    "en": ["Gluten", "Milk", "Egg", "Tree nuts", "Peanut", "Soy", "Sesame", "Mustard", "Celery", "Sulphites"],
+    "ru": ["Глютен", "Молоко", "Яйцо", "Орехи", "Арахис", "Соя", "Кунжут", "Горчица", "Сельдерей", "Сульфиты"],
+}
+
+for _s in SECTIONS.values():
+    for _it in _s["items"]:
+        _it["kcal"], _it["alg"] = NUTRI[_it["tr"]]
+
+UI["tr"].update(kcal="kcal", varies="kalori değişken", allergens="Alerjenler",
+                kcalnote="Kalori değerleri yaklaşıktır, porsiyona göre değişebilir.")
+UI["en"].update(kcal="kcal", varies="calories vary", allergens="Allergens",
+                kcalnote="Calorie values are approximate and may vary by portion.")
+UI["ru"].update(kcal="ккал", varies="калорийность меняется", allergens="Аллергены",
+                kcalnote="Калорийность указана приблизительно и может меняться в зависимости от порции.")

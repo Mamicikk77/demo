@@ -1,5 +1,5 @@
 import html
-from data import SECTIONS, UI
+from data import SECTIONS, UI, ALLERGENS
 
 E = html.escape
 
@@ -44,7 +44,13 @@ def item_html(it, lang, mode):
         sub = " · ".join(alts)
         desc = it["desc"]["tr"] if it["desc"] else ""
     out = f'<div class="it"><div class="row"><span class="nm">{E(name)}</span><span class="dots"></span><span class="pr">{price(it["price"])}</span></div>'
-    if sub:
+    if mode == "single":
+        u = UI[lang]
+        kcal = f'{it["kcal"]} {u["kcal"]}' if it["kcal"] is not None else u["varies"]
+        badges = "".join(f'<span class="ab">{n}</span>' for n in it["alg"])
+        sub_html = f'<span class="sub">{E(sub)}</span>' if sub else ""
+        out += f'<div class="meta">{sub_html}<span class="kc">◆ {E(kcal)}</span>{badges}</div>'
+    elif sub:
         out += f'<div class="sub">{E(sub)}</div>'
     if desc:
         out += f'<div class="ds">{E(desc)}</div>'
@@ -77,9 +83,6 @@ PAPER_CSS = """
 .sec .rule{margin-bottom:1.8mm}
 .items{display:flex;flex-direction:column;gap:2.6mm}
 .col.food .items{gap:3.6mm}
-html[lang=tr] .items{gap:4.4mm}
-html[lang=tr] .col.food .items{gap:5mm}
-html[lang=tr] .col{gap:9mm}
 .it .nm{font-size:8.6pt;white-space:normal;min-width:0}
 .it .pr{font-size:8.6pt}
 .it .sub{font-size:8.6pt;line-height:1;margin-top:0}
@@ -95,6 +98,14 @@ html[lang=tr] .col{gap:9mm}
 .band .st{color:var(--gold2);font-size:8pt}
 .notes{margin:0 11mm 7mm;border-top:1px solid var(--gold);padding-top:2.6mm;display:flex;flex-direction:column;gap:1.3mm;font-size:6.6pt;color:var(--mute);line-height:1.35}
 .notes span{color:var(--gold)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;column-gap:1.3mm;row-gap:.3mm;margin-top:.2mm}
+.meta .sub{margin:0}
+.meta .kc{font-size:6.4pt;color:var(--mute);white-space:nowrap}
+.ab{display:inline-flex;align-items:center;justify-content:center;min-width:3.1mm;padding:0 .4mm;height:3.1mm;border:.6pt solid var(--purple);border-radius:1.6mm;font-size:5pt;font-weight:600;color:var(--purple)!important;line-height:1}
+.notes .lgh{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:.12em;font-size:10.5pt}
+.notes .lg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1mm 3mm;margin-bottom:1.8mm}
+.notes .lg div{display:flex;align-items:center;gap:1.3mm;color:var(--ink)}
+.notes .nl{display:flex;flex-direction:column;gap:1mm}
 .page .band{position:relative;z-index:1}
 """
 
@@ -111,7 +122,10 @@ def band(lang):
 
 def notes(lang):
     u = UI[lang]
-    return f'<div class="notes"><div><span>✦</span> {E(u["vat"])}</div><div><span>✦</span> {E(u["allergy"])}</div></div>'
+    legend = "".join(f'<div><span class="ab">{i}</span>{E(n)}</div>' for i, n in enumerate(ALLERGENS[lang], 1))
+    lines = "".join(f'<div><span>✦</span> {E(u[k])}</div>' for k in ("kcalnote", "allergy", "vat"))
+    return (f'<div class="notes"><div class="lgh">{E(u["allergens"])}</div><div class="lg">{legend}</div>'
+            f'<div class="nl">{lines}</div></div>')
 
 
 PAPER_LAYOUT = [
