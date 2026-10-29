@@ -27,10 +27,10 @@ SECTIONS = {
               D("150 gr et döner, patates kızartması",
                 "150 g meat döner wrap, French fries",
                 "150 г мясного дёнера в тонкой лепёшке, картофель фри")),
-            I("Et Döner Lavaş", "Meat Döner in Lavash", "Мясной дёнер в лаваше", 425,
+            I("Ekmek Arası Et Döner", "Meat Döner in Bread", "Мясной дёнер в хлебе", 425,
               D("150 gr et döner, patates kızartması",
-                "150 g meat döner in lavash, French fries",
-                "150 г мясного дёнера в лаваше, картофель фри")),
+                "150 g meat döner in bread, French fries",
+                "150 г мясного дёнера в хлебе, картофель фри")),
         ],
     },
     "soup_salad": {
@@ -220,7 +220,7 @@ UI = {
 # kcal None means it varies (e.g. soup of the day).
 NUTRI = {
     "Pilav Üstü Döner": (1050, [1, 2]), "İskender (Et Dönerden)": (950, [1, 2]),
-    "Döner Burger": (850, [1, 7]), "Et Döner Dürüm": (780, [1]), "Et Döner Lavaş": (780, [1]),
+    "Döner Burger": (850, [1, 7]), "Et Döner Dürüm": (780, [1]), "Ekmek Arası Et Döner": (800, [1]),
     "Günün Çorbası": (None, []), "Çoban Salatası": (120, []), "Akdeniz Salatası": (280, [2]),
     "Pirinç Pilavı": (350, [2]), "Patates Kızartması": (480, []), "Yoğurt": (120, [2]),
     "Kabak Tatlısı": (450, [4, 7]),
